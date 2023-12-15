@@ -32,7 +32,8 @@ public class TaptapBankClient
         if (validationErrors is not null && validationErrors.Count()>1)
         {
             result.IsSuccess = false;
-            result.RequestValidationErrors = validationErrors;  
+            result.RequestValidationErrors = validationErrors;
+            return result;
         }
 
         // 2 - convert the user object to xml
@@ -72,6 +73,7 @@ public class TaptapBankClient
         {
             result.IsSuccess = false;
             result.RequestValidationErrors = validationErrors;
+            return result;
         }
 
         // 2 - create the request body for transaction API
@@ -100,7 +102,7 @@ public class TaptapBankClient
         }
 
         // 7 - return success
-        result.SuccessMessage = Constants.TransactionCreationSuccess;
+        result.SuccessMessage = $"{Constants.TransactionCreationSuccess} Amount : {transactionRequest.Amount} Recipient : {transactionRequest.Recipient.Email}";
         return result;
     }
 
@@ -120,6 +122,7 @@ public class TaptapBankClient
         {
             result.IsSuccess = false;
             result.RequestValidationErrors = validationErrors;
+            return result;
         }
 
         // 2 - prepare the POST request for upgrade user API

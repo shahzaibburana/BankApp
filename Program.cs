@@ -2,6 +2,7 @@
 using BankApp.Models;
 using BankApp.Utils;
 using Bogus;
+using System.Runtime.ConstrainedExecution;
 
 // http client to make api calls
 var httpClient = new HttpClient();
@@ -26,7 +27,7 @@ await UpgradeUser();
 
 async Task CreateNewUser()
 {
-    Console.WriteLine($"Creating User: {userFirstName} {userLastName} {userEmail}");
+    Console.WriteLine($":::::::::::::::Creating User: {userFirstName} {userLastName} {userEmail}:::::::::::::::::::");
 
     var createUserResult = await client.CreateUserAsync(new CreateUserRequest { FirstName = userFirstName, LastName = userLastName, Email = userEmail, Password = userPassword });
 
@@ -35,6 +36,8 @@ async Task CreateNewUser()
 
 async Task SendMoneyToRecipients()
 {
+    Console.WriteLine();
+    Console.WriteLine(":::::::::::::::Starting to send money:::::::::::::::::::");
     int recipientCounter = 1;
     int totalRecipients = 5;
     do
@@ -44,6 +47,7 @@ async Task SendMoneyToRecipients()
         string recipientLastName = faker.Name.LastName();
 
         // Create a new transaction
+        Console.WriteLine();
         Console.WriteLine($"Try sending max 10K to Recipient :{recipientFirstName} {recipientLastName} {recipientEmail}");
         int totalBalance = 0;
         int totalAccountLimit = 10000;
@@ -60,7 +64,7 @@ async Task SendMoneyToRecipients()
             var createTransactionResult = await client.CreateTransactionAsync(new CreateTransactionRequest { TransactionId = transactionId, Amount = currentTrasactionAmount, Recipient = new RecipientDetails { Email = recipientEmail, FirstName = recipientFirstName, LastName = recipientLastName }, Email = userEmail, Password = userPassword });
          
             // if transaction is successful, add the current transaction amount to total balance
-            await PrintResultOnConsole("Transaction Creation", createTransactionResult);
+            await PrintResultOnConsole($"Trasnaction Creation", createTransactionResult);
             if (createTransactionResult.IsSuccess)
             { 
                 totalBalance += currentTrasactionAmount;
@@ -77,8 +81,6 @@ async Task SendMoneyToRecipients()
                 }  
                 break;
             }
-            
-            Console.WriteLine($"Current Transaction: {currentTrasactionAmount} Total Balance:{totalBalance}");
         }
         while (totalBalance < totalAccountLimit);
         recipientCounter++;
@@ -88,7 +90,8 @@ async Task SendMoneyToRecipients()
 
 async Task UpgradeUser()
 {
-    Console.WriteLine($"Upgrading User: {userEmail}");
+    Console.WriteLine();
+    Console.WriteLine($":::::::::::::::Upgrading User: {userEmail}:::::::::::::::");
 
     var upgradeUserResult = await client.UpgradeUserAsync(new UpgradeUserRequest { Email = userEmail, Password = userPassword });
 
