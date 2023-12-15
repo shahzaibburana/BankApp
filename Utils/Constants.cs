@@ -24,11 +24,14 @@ public static class Constants
     public static class ValidationMessages
     {
         public const string EmailRequired = "Email is required";
-        public const string EmailInvalid = "Email is invalid";
         public const string FirstNameRequired = "First Name is required";
         public const string LastNameRequired = "Last Name is required";
         public const string PasswordRequired = "Password is required";
-        public const string PasswordLength = "Password must be at least 7 characters long";
+        public const string EmailInvalid = "A valid email is required.";
+        public const string FirstNameLength = "First name must be between 2 and 50 characters";
+        public const string LastNameLength = "Last name must be between 2 and 50 characters";
+        public const string PasswordLength = "Password must be longer than or equal to 7 characters";
+
         public const string TransactionIdRequired = "Transaction Id is required";
         public const string TransactionIdLength = "Transaction Id must be at least 12 characters long";
         public const string AmountRequired = "Amount is required";

@@ -9,7 +9,7 @@ namespace BankApp;
 public class TaptapBankClient
 {
     private readonly HttpClient _httpClient;
-    
+
 
     public TaptapBankClient(HttpClient httpClient, string baseUrl)
     {
@@ -24,12 +24,12 @@ public class TaptapBankClient
     /// <returns></returns>
     public async Task<Result> CreateUserAsync(CreateUserRequest userRequest)
     {
-        var result = new Result(isSuccess:true);
+        var result = new Result(isSuccess: true);
 
         // 1 - Validate the user object
         var createUserValidator = new CreateUserRequestValidator();
         var validationErrors = await ValidateAsync(userRequest, createUserValidator);
-        if (validationErrors is not null && validationErrors.Count()>1)
+        if (validationErrors != null && validationErrors.Count() > 0)
         {
             result.IsSuccess = false;
             result.RequestValidationErrors = validationErrors;
@@ -69,7 +69,7 @@ public class TaptapBankClient
         // 1 - Validate the transaction object
         var createTransactionValidator = new CreateTransactionRequestValidator();
         var validationErrors = await ValidateAsync(transactionRequest, createTransactionValidator);
-        if (validationErrors is not null && validationErrors.Count() > 1)
+        if (validationErrors != null && validationErrors.Count() > 0)
         {
             result.IsSuccess = false;
             result.RequestValidationErrors = validationErrors;
@@ -84,7 +84,7 @@ public class TaptapBankClient
         {
             Content = new StringContent(requestBody, Encoding.UTF8, "application/json")
         };
-   
+
         // 4 - add the authorization header
         var encryptedPassword = EncryptionHelper.CalculateMD5Hash(transactionRequest.Password);
         request.Headers.Add("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{transactionRequest.Email}:{encryptedPassword}"))}");
@@ -118,7 +118,7 @@ public class TaptapBankClient
         // 1 - Validate the upgrade user object
         var upgradeUserValidator = new UpgradeUserRequestValidator();
         var validationErrors = await ValidateAsync(upgradeUserRequest, upgradeUserValidator);
-        if (validationErrors is not null && validationErrors.Count() > 1)
+        if (validationErrors != null && validationErrors.Count() > 0)
         {
             result.IsSuccess = false;
             result.RequestValidationErrors = validationErrors;

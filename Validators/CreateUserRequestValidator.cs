@@ -7,19 +7,19 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
     public CreateUserRequestValidator()
     {
         RuleFor(user => user.FirstName)
-            .NotEmpty().WithMessage("First name is required.")
-            .Length(2, 50).WithMessage("First name must be between 2 and 50 characters.");
+            .NotEmpty().WithMessage(Constants.ValidationMessages.FirstNameRequired)
+            .Length(2, 50).WithMessage(Constants.ValidationMessages.FirstNameLength);
 
         RuleFor(user => user.LastName)
-            .NotEmpty().WithMessage("Last name is required.")
-            .Length(2, 50).WithMessage("Last name must be between 2 and 50 characters.");
+            .NotEmpty().WithMessage(Constants.ValidationMessages.LastNameRequired)
+            .Length(2, 50).WithMessage(Constants.ValidationMessages.LastNameLength);
 
         RuleFor(user => user.Email)
-            .NotEmpty().WithMessage("Email is required.")
-            .EmailAddress().WithMessage("A valid email is required.");
+            .NotEmpty().WithMessage(Constants.ValidationMessages.EmailRequired)
+            .EmailAddress().WithMessage(Constants.ValidationMessages.EmailInvalid);
 
         RuleFor(user => user.Password)
-            .NotEmpty().WithMessage("Password is required.")
-            .MinimumLength(Constants.MinimumPasswordLength).WithMessage($"Password must be longer than or equal to {Constants.MinimumPasswordLength} characters.");
+            .NotEmpty().WithMessage(Constants.ValidationMessages.PasswordRequired)
+            .MinimumLength(Constants.MinimumPasswordLength).WithMessage(Constants.ValidationMessages.PasswordLength);
     }
 }
