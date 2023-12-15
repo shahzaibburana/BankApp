@@ -2,6 +2,19 @@
 using BankApp.Models;
 using BankApp.Utils;
 using Bogus;
+using Polly;
+using Polly.Retry;
+
+// Define a retry policy
+# region retry policy
+int maxRetryAttempts = 5;
+AsyncRetryPolicy<Result> retryPolicy = Policy
+    .HandleResult<Result>(r => r.IsFailure && r.APIErrorMessage.Equals(Constants.APIErrorMessages.EmailNameMismatch))
+    .RetryAsync(maxRetryAttempts, onRetry: (response, retryCount) =>
+    {
+        Console.WriteLine($"Retry {retryCount} for {response.Result.APIErrorMessage}. trying new recipient.");
+    });
+#endregion
 
 // http client to make api calls
 var httpClient = new HttpClient();
@@ -30,7 +43,7 @@ async Task CreateNewUser()
 
     var createUserResult = await client.CreateUserAsync(new CreateUserRequest { FirstName = userFirstName, LastName = userLastName, Email = userEmail, Password = userPassword });
 
-    await PrintResultOnConsole("User Creation",createUserResult);
+    await PrintResultOnConsole("User Creation", createUserResult);
 }
 
 async Task SendMoneyToRecipients()
@@ -51,21 +64,21 @@ async Task SendMoneyToRecipients()
         int totalBalance = 0;
         int totalAccountLimit = 10000;
         int kycLimit = 2000;
-        int intialDepositLimit = 1000;
+        int initialDepositLimit = 1000;
         int subsequentDepositLimit = 600;
 
         do
         {
             // if current balance is less than kyc limit, then deposit intial deposit limit (1000), else deposit subsequent deposit limit (600)
-            int currentTrasactionAmount = totalBalance < kycLimit ? intialDepositLimit : ((totalAccountLimit - totalBalance) < subsequentDepositLimit ? (totalAccountLimit - totalBalance) : subsequentDepositLimit);
+            int currentTrasactionAmount = totalBalance < kycLimit ? initialDepositLimit : ((totalAccountLimit - totalBalance) < subsequentDepositLimit ? (totalAccountLimit - totalBalance) : subsequentDepositLimit);
             string transactionId = faker.Random.AlphaNumeric(12);
             // create a new transaction
             var createTransactionResult = await client.CreateTransactionAsync(new CreateTransactionRequest { TransactionId = transactionId, Amount = currentTrasactionAmount, Recipient = new RecipientDetails { Email = recipientEmail, FirstName = recipientFirstName, LastName = recipientLastName }, Email = userEmail, Password = userPassword });
-         
+
             // if transaction is successful, add the current transaction amount to total balance
-            await PrintResultOnConsole($"Trasnaction Creation", createTransactionResult);
+            await PrintResultOnConsole($"Transaction Creation", createTransactionResult);
             if (createTransactionResult.IsSuccess)
-            { 
+            {
                 totalBalance += currentTrasactionAmount;
             }
             // error handling
@@ -77,7 +90,7 @@ async Task SendMoneyToRecipients()
                     // to avoid infinite loop, try max 50 recipients
                     if (totalRecipients <= 50)
                         totalRecipients++;
-                }  
+                }
                 break;
             }
         }
@@ -85,6 +98,55 @@ async Task SendMoneyToRecipients()
         recipientCounter++;
     }
     while (recipientCounter <= totalRecipients);
+}
+
+// another option to send moey to recipients using Polly retry library
+async Task SendMoneyToRecipientsWithPolly()
+{
+    Console.WriteLine();
+    Console.WriteLine(":::::::::::::::Starting to send money With polly:::::::::::::::::::");
+    int currentAmountSent = 0;
+    int totalAmountToSend = 50000;
+    int amountInASingletransaction = 1000;
+
+    int tryCounter = 1;
+    int maxTries = 70;
+
+    do
+    {
+        // create a new transaction
+        var createTransactionResult = await retryPolicy.ExecuteAsync(async () =>
+        {
+            string transactionId = faker.Random.AlphaNumeric(12);
+            return await client.CreateTransactionAsync(new CreateTransactionRequest
+            {
+                TransactionId = transactionId,
+                Amount = amountInASingletransaction,
+                Recipient = new RecipientDetails
+                {
+                    Email = faker.Internet.Email(),
+                    FirstName = faker.Name.FirstName(),
+                    LastName = faker.Name.LastName()
+                },
+                Email = userEmail,
+                Password = userPassword
+            });
+        });
+
+        // if transaction is successful, add the current transaction amount to total balance
+        await PrintResultOnConsole($"Transaction Creation", createTransactionResult);
+        if (createTransactionResult.IsSuccess)
+        {
+            currentAmountSent += amountInASingletransaction;
+        }
+        else
+        {
+            break;
+        }
+        tryCounter++;
+    }
+    while (currentAmountSent < totalAmountToSend || tryCounter == maxTries);
+
 }
 
 async Task UpgradeUser()
