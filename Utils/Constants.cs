@@ -46,6 +46,11 @@ public static class Constants
         public const string EmailNameMismatch = "The email and names of this recipient do not match with our external provider. Please try different name.";
         public const string InsufficentKYC = "Due to insufficient KYC, recipient cannot recieve any more transactions above 600";
     }
+
+    public static class SystemDefaults
+    {
+        public static string DefaultRegion = "US";
+    }
 }
 
 

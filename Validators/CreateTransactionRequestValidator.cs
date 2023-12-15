@@ -54,7 +54,7 @@ public class CreateTransactionRequestValidator : AbstractValidator<CreateTransac
         try
         {
             var phoneNumberUtil = PhoneNumberUtil.GetInstance();
-            var numberProto = phoneNumberUtil.Parse(phoneNumber, null); // Specify a region code if needed
+            var numberProto = phoneNumberUtil.Parse(phoneNumber, Constants.SystemDefaults.DefaultRegion);
             return phoneNumberUtil.IsValidNumber(numberProto);
         }
         catch (NumberParseException)
