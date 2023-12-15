@@ -37,6 +37,7 @@ await SendMoneyToRecipients();
 // Upgrade the user
 await UpgradeUser();
 
+// create a new user
 async Task CreateNewUser()
 {
     Console.WriteLine($":::::::::::::::Creating User: {userFirstName} {userLastName} {userEmail}:::::::::::::::::::");
@@ -46,11 +47,13 @@ async Task CreateNewUser()
     await PrintResultOnConsole("User Creation", createUserResult);
 }
 
+// sends 50k to 5 recipients, if the API fails due to email name mismatch, then increase the total recipients to be tried by 1
 async Task SendMoneyToRecipients()
 {
     Console.WriteLine();
     Console.WriteLine(":::::::::::::::Starting to send money:::::::::::::::::::");
     int recipientCounter = 1;
+    // 10K per user and 5 users will make the amount 50K
     int totalRecipients = 5;
     do
     {
@@ -100,7 +103,8 @@ async Task SendMoneyToRecipients()
     while (recipientCounter <= totalRecipients);
 }
 
-// another option to send moey to recipients using Polly retry library
+//another option to send money
+//sends 50k in less number of calls and with retry option (using Polly retry library)
 async Task SendMoneyToRecipientsWithPolly()
 {
     Console.WriteLine();
@@ -149,6 +153,7 @@ async Task SendMoneyToRecipientsWithPolly()
 
 }
 
+//upgraders the created user's status to premium
 async Task UpgradeUser()
 {
     Console.WriteLine();
