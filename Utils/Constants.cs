@@ -17,5 +17,32 @@ public static class Constants
     public const string ValidationErrorsPrefix = "Validation Errors";
 
     public const int MinimumPasswordLength = 7;
+
+
+    public const string ApiUrl = "http://ec2-44-202-225-54.compute-1.amazonaws.com:3000";
+
+    public static class ValidationMessages
+    {
+        public const string EmailRequired = "Email is required";
+        public const string EmailInvalid = "Email is invalid";
+        public const string FirstNameRequired = "First Name is required";
+        public const string LastNameRequired = "Last Name is required";
+        public const string PasswordRequired = "Password is required";
+        public const string PasswordLength = "Password must be at least 7 characters long";
+        public const string TransactionIdRequired = "Transaction Id is required";
+        public const string TransactionIdLength = "Transaction Id must be at least 12 characters long";
+        public const string AmountRequired = "Amount is required";
+        public const string AmountRange = "Amount must be between 10 and 2000";
+        public const string RecipientEmailRequired = "Recipient Email is required";
+        public const string RecipientEmailInvalid = "Recipient Email is invalid";
+        public const string RecipientFirstNameRequired = "Recipient First Name is required";
+        public const string RecipientLastNameRequired = "Recipient Last Name is required";
+    }
+    public static class APIErrorMessages
+    {
+        public const string EmailNameMismatch = "The email and names of this recipient do not match with our external provider. Please try different name.";
+        public const string InsufficentKYC = "Due to insufficient KYC, recipient cannot recieve any more transactions above 600";
+    }
 }
+
 

@@ -22,14 +22,17 @@ public class TaptapBankClient
     /// </summary>
     /// <param name="userRequest"></param>
     /// <returns></returns>
-    public async Task<string> CreateUserAsync(CreateUserRequest userRequest)
+    public async Task<Result> CreateUserAsync(CreateUserRequest userRequest)
     {
+        var result = new Result(isSuccess:true);
+
         // 1 - Validate the user object
         var createUserValidator = new CreateUserRequestValidator();
-        string validationErrorMessage = await ValidateAsync(userRequest, createUserValidator);
-        if (!string.IsNullOrEmpty(validationErrorMessage))
+        var validationErrors = await ValidateAsync(userRequest, createUserValidator);
+        if (validationErrors is not null && validationErrors.Count()>1)
         {
-            return $"{Constants.ValidationErrorsPrefix}:\n {validationErrorMessage}";
+            result.IsSuccess = false;
+            result.RequestValidationErrors = validationErrors;  
         }
 
         // 2 - convert the user object to xml
@@ -42,13 +45,15 @@ public class TaptapBankClient
         // 4 - check if the request was successful and return error message if not
         if (!response.IsSuccessStatusCode)
         {
+            result.IsSuccess = false;
             var responseStr = await response.Content.ReadAsStringAsync();
-            var errorMsg = HTMLParser.ExtractPreTagMessage(responseStr);
-            return $"{Constants.UserCreationFailure}: {errorMsg}";
+            result.APIErrorMessage = HTMLParser.ExtractPreTagMessage(responseStr);
+            return result;
         }
 
         // 5 - return success message
-        return Constants.UserCreationSuccess;
+        result.SuccessMessage = Constants.UserCreationSuccess;
+        return result;
     }
 
     /// <summary>
@@ -56,14 +61,17 @@ public class TaptapBankClient
     /// </summary>
     /// <param name="transactionRequest"></param>
     /// <returns></returns>
-    public async Task<string> CreateTransactionAsync(CreateTransactionRequest transactionRequest)
+    public async Task<Result> CreateTransactionAsync(CreateTransactionRequest transactionRequest)
     {
+        var result = new Result(isSuccess: true);
+
         // 1 - Validate the transaction object
         var createTransactionValidator = new CreateTransactionRequestValidator();
-        string validationErrorMessage = await ValidateAsync(transactionRequest, createTransactionValidator);
-        if (!string.IsNullOrEmpty(validationErrorMessage))
+        var validationErrors = await ValidateAsync(transactionRequest, createTransactionValidator);
+        if (validationErrors is not null && validationErrors.Count() > 1)
         {
-            return $"{Constants.ValidationErrorsPrefix}:\n {validationErrorMessage}";
+            result.IsSuccess = false;
+            result.RequestValidationErrors = validationErrors;
         }
 
         // 2 - create the request body for transaction API
@@ -85,13 +93,15 @@ public class TaptapBankClient
         // 6 - check if the request was successful and return error message if not
         if (!response.IsSuccessStatusCode)
         {
+            result.IsSuccess = false;
             var responseStr = await response.Content.ReadAsStringAsync();
-            var errorMsg = HTMLParser.ExtractPreTagMessage(responseStr);
-            return $"{Constants.TransactionCreationFailure}: {errorMsg}";
+            result.APIErrorMessage = HTMLParser.ExtractPreTagMessage(responseStr);
+            return result;
         }
 
-        // 7 - return success message
-        return Constants.TransactionCreationSuccess;
+        // 7 - return success
+        result.SuccessMessage = Constants.TransactionCreationSuccess;
+        return result;
     }
 
     /// <summary>
@@ -99,14 +109,17 @@ public class TaptapBankClient
     /// </summary>
     /// <param name="upgradeUserRequest"></param>
     /// <returns></returns>
-    public async Task<string> UpgradeUserAsync(UpgradeUserRequest upgradeUserRequest)
+    public async Task<Result> UpgradeUserAsync(UpgradeUserRequest upgradeUserRequest)
     {
+        var result = new Result(isSuccess: true);
+
         // 1 - Validate the upgrade user object
         var upgradeUserValidator = new UpgradeUserRequestValidator();
-        string validationErrorMessage = await ValidateAsync(upgradeUserRequest, upgradeUserValidator);
-        if (!string.IsNullOrEmpty(validationErrorMessage))
+        var validationErrors = await ValidateAsync(upgradeUserRequest, upgradeUserValidator);
+        if (validationErrors is not null && validationErrors.Count() > 1)
         {
-            return $"{Constants.ValidationErrorsPrefix}:\n {validationErrorMessage}";
+            result.IsSuccess = false;
+            result.RequestValidationErrors = validationErrors;
         }
 
         // 2 - prepare the POST request for upgrade user API
@@ -122,22 +135,24 @@ public class TaptapBankClient
         // 5 - check if the request was successful and return error message if not
         if (!response.IsSuccessStatusCode)
         {
+            result.IsSuccess = false;
             var responseStr = await response.Content.ReadAsStringAsync();
-            var errorMsg = HTMLParser.ExtractPreTagMessage(responseStr);
-            return $"{Constants.UserUpgradeFailure}: {errorMsg}";
+            result.APIErrorMessage = HTMLParser.ExtractPreTagMessage(responseStr);
+            return result;
         }
 
-        // 6 - return success message
-        return Constants.UserUpgradeSuccess;
+        // 6 - return success
+        result.SuccessMessage = Constants.UserUpgradeSuccess;
+        return result;
     }
 
-    private async Task<string> ValidateAsync<T>(T instance, IValidator<T> validator)
+    private async Task<List<string>> ValidateAsync<T>(T instance, IValidator<T> validator)
     {
         var results = await validator.ValidateAsync(instance);
 
         if (!results.IsValid)
         {
-            return string.Join(Environment.NewLine, results.Errors.Select(failure => failure.ErrorMessage));
+            return results.Errors.Select(failure => failure.ErrorMessage).ToList();
         }
 
         return null;
