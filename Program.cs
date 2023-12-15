@@ -46,6 +46,7 @@ async Task CreateNewUser()
     await PrintResultOnConsole("User Creation", createUserResult);
 }
 
+// sends 50k to 5 recipients, if the API fails due to email name mismatch, then increase the total recipients to be tried by 1
 async Task SendMoneyToRecipients()
 {
     Console.WriteLine();
@@ -101,7 +102,8 @@ async Task SendMoneyToRecipients()
     while (recipientCounter <= totalRecipients);
 }
 
-// another option to send moey to recipients using Polly retry library
+//another option to send money
+//sends 50k in less number of calls and with retry option (using Polly retry library)
 async Task SendMoneyToRecipientsWithPolly()
 {
     Console.WriteLine();
