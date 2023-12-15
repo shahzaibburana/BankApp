@@ -28,11 +28,11 @@ public class TaptapBankClient
 
         // 1 - Validate the user object
         var createUserValidator = new CreateUserRequestValidator();
-        var validationErrors = await ValidateAsync(userRequest, createUserValidator);
-        if (validationErrors != null && validationErrors.Count() > 0)
+        var validationResults = await createUserValidator.ValidateAsync(userRequest);
+        if (!validationResults.IsValid)
         {
             result.IsSuccess = false;
-            result.RequestValidationErrors = validationErrors;
+            result.RequestValidationErrors = validationResults.Errors.Select(failure => failure.ErrorMessage).ToList();
             return result;
         }
 
@@ -68,11 +68,11 @@ public class TaptapBankClient
 
         // 1 - Validate the transaction object
         var createTransactionValidator = new CreateTransactionRequestValidator();
-        var validationErrors = await ValidateAsync(transactionRequest, createTransactionValidator);
-        if (validationErrors != null && validationErrors.Count() > 0)
+        var validationResults = await createTransactionValidator.ValidateAsync(transactionRequest);
+        if (!validationResults.IsValid)
         {
             result.IsSuccess = false;
-            result.RequestValidationErrors = validationErrors;
+            result.RequestValidationErrors = validationResults.Errors.Select(failure => failure.ErrorMessage).ToList();
             return result;
         }
 
@@ -117,11 +117,11 @@ public class TaptapBankClient
 
         // 1 - Validate the upgrade user object
         var upgradeUserValidator = new UpgradeUserRequestValidator();
-        var validationErrors = await ValidateAsync(upgradeUserRequest, upgradeUserValidator);
-        if (validationErrors != null && validationErrors.Count() > 0)
+        var validationResults = await upgradeUserValidator.ValidateAsync(upgradeUserRequest);
+        if (!validationResults.IsValid)
         {
             result.IsSuccess = false;
-            result.RequestValidationErrors = validationErrors;
+            result.RequestValidationErrors = validationResults.Errors.Select(failure => failure.ErrorMessage).ToList();
             return result;
         }
 
@@ -147,18 +147,6 @@ public class TaptapBankClient
         // 6 - return success
         result.SuccessMessage = Constants.UserUpgradeSuccess;
         return result;
-    }
-
-    private async Task<List<string>> ValidateAsync<T>(T instance, IValidator<T> validator)
-    {
-        var results = await validator.ValidateAsync(instance);
-
-        if (!results.IsValid)
-        {
-            return results.Errors.Select(failure => failure.ErrorMessage).ToList();
-        }
-
-        return null;
     }
 }
 

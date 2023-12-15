@@ -50,6 +50,7 @@ public static class Constants
     public static class SystemDefaults
     {
         public static string DefaultRegion = "US";
+        public static string DefaultLocale = "en_US";
     }
 }
 
