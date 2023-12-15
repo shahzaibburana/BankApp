@@ -51,6 +51,7 @@ async Task SendMoneyToRecipients()
     Console.WriteLine();
     Console.WriteLine(":::::::::::::::Starting to send money:::::::::::::::::::");
     int recipientCounter = 1;
+    // 10K per user and 5 users will make the amount 50K
     int totalRecipients = 5;
     do
     {
