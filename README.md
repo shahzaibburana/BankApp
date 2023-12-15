@@ -26,3 +26,33 @@ This API client, built using .NET 6, facilitates user management, financial tran
 - .NET 6 SDK
 - A suitable development environment like Visual Studio or VS Code.
 
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository URL>
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd <project directory>
+   ```
+3. Restore the project dependencies:
+   ```bash
+   dotnet restore
+   ```
+
+### Running the Application
+
+To start the application, run:
+
+```bash
+dotnet run
+```
+
+### Running the Tests
+
+Execute the unit tests with:
+
+```bash
+dotnet test
+```
