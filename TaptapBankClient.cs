@@ -98,10 +98,17 @@ public class TaptapBankClient
             result.IsSuccess = false;
             var responseStr = await response.Content.ReadAsStringAsync();
             result.APIErrorMessage = HTMLParser.ExtractPreTagMessage(responseStr);
+
+            if (result.APIErrorMessage.Equals(Constants.APIErrorMessages.InsufficentKYC))
+                result.TransactionStatus = Constants.TransactionStatus.KYC_FAILURE;
+            else if (result.APIErrorMessage.Equals(Constants.APIErrorMessages.FailedRetryAbly))
+                result.TransactionStatus = Constants.TransactionStatus.FAILED_RETRYABLY;
+            
             return result;
         }
 
         // 7 - return success
+        result.TransactionStatus = Constants.TransactionStatus.PAID;
         result.SuccessMessage = $"{Constants.TransactionCreationSuccess} Amount : {transactionRequest.Amount} Recipient : {transactionRequest.Recipient.Email}";
         return result;
     }

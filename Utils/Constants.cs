@@ -45,12 +45,23 @@ public static class Constants
     {
         public const string EmailNameMismatch = "The email and names of this recipient do not match with our external provider. Please try different name.";
         public const string InsufficentKYC = "Due to insufficient KYC, recipient cannot recieve any more transactions above 600";
+        public const string FailedRetryAbly = "Failed please try again.";
     }
 
     public static class SystemDefaults
     {
         public static string DefaultRegion = "US";
         public static string DefaultLocale = "en_US";
+    }
+
+    public enum TransactionStatus
+    {
+        PAID,
+        KYC_FAILURE,
+        FAILED_RETRYABLY,
+        DUPLICATE_TRANSACTION_ID,
+        PENDING,
+        UNKNOWN
     }
 }
 

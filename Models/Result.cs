@@ -1,4 +1,8 @@
-﻿namespace BankApp.Models;
+﻿
+
+using static BankApp.Utils.Constants;
+
+namespace BankApp.Models;
 public class Result
 {
     public Result(bool isSuccess)
@@ -10,5 +14,6 @@ public class Result
     public bool IsFailure => !IsSuccess;
     public string APIErrorMessage { get; set; } = string.Empty;
     public List<string> RequestValidationErrors { get; set; } = new List<string>();
+    public TransactionStatus TransactionStatus { get; set; }
 }
 
