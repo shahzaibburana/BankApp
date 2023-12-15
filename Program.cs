@@ -37,6 +37,7 @@ await SendMoneyToRecipients();
 // Upgrade the user
 await UpgradeUser();
 
+// create a new user
 async Task CreateNewUser()
 {
     Console.WriteLine($":::::::::::::::Creating User: {userFirstName} {userLastName} {userEmail}:::::::::::::::::::");
@@ -152,6 +153,7 @@ async Task SendMoneyToRecipientsWithPolly()
 
 }
 
+//upgraders the created user's status to premium
 async Task UpgradeUser()
 {
     Console.WriteLine();
