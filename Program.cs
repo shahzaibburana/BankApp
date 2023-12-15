@@ -2,7 +2,6 @@
 using BankApp.Models;
 using BankApp.Utils;
 using Bogus;
-using System.Runtime.ConstrainedExecution;
 
 // http client to make api calls
 var httpClient = new HttpClient();
