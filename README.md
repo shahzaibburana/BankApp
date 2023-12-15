@@ -1,4 +1,4 @@
-# TaptapBankClient Client
+# TaptapBankClient
 
 This API client, built using .NET 6, facilitates user management, financial transactions, and user status upgrades. It's designed for developers and testers who require a robust and feature-rich platform for simulating financial operations.
 
